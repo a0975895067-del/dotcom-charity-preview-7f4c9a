@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 120" role="img" aria-labelledby="title desc">
+  <title id="title">達康慈善基金會</title>
+  <desc id="desc">達康慈善基金會網站示範識別</desc>
+  <rect width="360" height="120" rx="28" fill="#fffdf7"/>
+  <circle cx="53" cy="48" r="34" fill="#f5a623"/>
+  <circle cx="53" cy="48" r="24" fill="#fff9da"/>
+  <circle cx="44" cy="43" r="3" fill="#503f32"/>
+  <circle cx="62" cy="43" r="3" fill="#503f32"/>
+  <path d="M41 55c7 8 17 8 24 0" fill="none" stroke="#503f32" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="25" cy="23" r="9" fill="#e94f7c"/>
+  <circle cx="78" cy="20" r="8" fill="#7cc8b8"/>
+  <text x="98" y="46" font-family="Arial, sans-serif" font-size="31" font-weight="800" fill="#e6a215">dot com</text>
+  <text x="98" y="75" font-family="Arial, sans-serif" font-size="27" font-weight="800" fill="#e94f7c">charity</text>
+  <text x="99" y="99" font-family="Arial, 'Noto Sans TC', sans-serif" font-size="18" font-weight="700" fill="#754a54">達康慈善基金會</text>
+</svg>
