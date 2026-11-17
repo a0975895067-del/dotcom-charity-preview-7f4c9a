@@ -4,21 +4,50 @@ const closeDialogButton = document.querySelector('.dialog-close');
 const contentTriggers = document.querySelectorAll('.clickable-card, .resource-grid > a, .mini-list > a');
 const sourcePanels = document.querySelectorAll('.library-panel');
 
-function openContentById(targetId) {
+function contentIdFromLink(link) {
+  const url = new URL(link.href);
+  return url.searchParams.get('content') || url.hash.slice(1);
+}
+
+function contentUrl(targetId) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('content', targetId);
+  url.hash = '';
+  return url;
+}
+
+function listUrl() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('content');
+  url.hash = '';
+  return url;
+}
+
+function openContentById(targetId, options = {}) {
   const source = document.getElementById(targetId);
-  if (!source) return;
+  if (!source) return false;
 
   const copy = source.cloneNode(true);
   copy.removeAttribute('id');
   copy.querySelectorAll('a[href="#programs"], a[href="#stories"], a[href="#resources"]').forEach((link) => link.remove());
   dialogContent.replaceChildren(copy);
-  history.replaceState(null, '', `#${targetId}`);
-  contentDialog.showModal();
+  if (options.updateHistory !== false) {
+    history.pushState({ content: targetId }, '', contentUrl(targetId));
+  }
+  if (!contentDialog.open) contentDialog.showModal();
   closeDialogButton.focus();
+  return true;
 }
 
 function openContentDialog(trigger) {
-  openContentById(new URL(trigger.href).hash.slice(1));
+  openContentById(contentIdFromLink(trigger));
+}
+
+function closeContent(options = {}) {
+  if (contentDialog.open) contentDialog.close();
+  if (options.updateHistory !== false) {
+    history.pushState({}, '', listUrl());
+  }
 }
 
 contentTriggers.forEach((trigger) => {
@@ -45,13 +74,28 @@ sourcePanels.forEach((panel) => {
 });
 
 dialogContent.addEventListener('click', (event) => {
-  const nestedLink = event.target.closest('a[href^="#"]');
+  const nestedLink = event.target.closest('a[href*="content="], a[href^="#"]');
   if (!nestedLink) return;
   event.preventDefault();
-  openContentById(new URL(nestedLink.href).hash.slice(1));
+  openContentById(contentIdFromLink(nestedLink));
 });
 
-closeDialogButton.addEventListener('click', () => contentDialog.close());
+closeDialogButton.addEventListener('click', () => closeContent());
 contentDialog.addEventListener('click', (event) => {
-  if (event.target === contentDialog) contentDialog.close();
+  if (event.target === contentDialog) closeContent();
 });
+contentDialog.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  closeContent();
+});
+
+window.addEventListener('popstate', () => {
+  const targetId = new URL(window.location.href).searchParams.get('content');
+  if (targetId) openContentById(targetId, { updateHistory: false });
+  else closeContent({ updateHistory: false });
+});
+
+const initialContentId = new URL(window.location.href).searchParams.get('content');
+if (initialContentId && !openContentById(initialContentId, { updateHistory: false })) {
+  history.replaceState({}, '', listUrl());
+}
