@@ -1,7 +1,11 @@
 const contentDialog = document.querySelector('#content-dialog');
 const dialogContent = document.querySelector('#dialog-content');
 const closeDialogButton = document.querySelector('.dialog-close');
-const contentTriggers = document.querySelectorAll('.clickable-card, .resource-grid > a, .mini-list > a');
+const externalConfirmDialog = document.querySelector('#external-confirm-dialog');
+const externalConfirmMessage = document.querySelector('#external-confirm-message');
+const externalConfirmCancel = document.querySelector('#external-confirm-cancel');
+const externalConfirmProceed = document.querySelector('#external-confirm-proceed');
+const contentTriggers = document.querySelectorAll('a[href*="?content="]');
 const sourcePanels = document.querySelectorAll('.library-panel');
 
 function contentIdFromLink(link) {
@@ -78,6 +82,23 @@ dialogContent.addEventListener('click', (event) => {
   if (!nestedLink) return;
   event.preventDefault();
   openContentById(contentIdFromLink(nestedLink));
+});
+
+document.addEventListener('click', (event) => {
+  const externalArticleLink = event.target.closest('a.confirm-external');
+  if (!externalArticleLink) return;
+
+  event.preventDefault();
+  externalConfirmMessage.textContent = externalArticleLink.dataset.confirm || '您即將離開本站並開啟外部內容。';
+  externalConfirmProceed.href = externalArticleLink.href;
+  externalConfirmDialog.showModal();
+  externalConfirmCancel.focus();
+});
+
+externalConfirmCancel.addEventListener('click', () => externalConfirmDialog.close());
+externalConfirmProceed.addEventListener('click', () => externalConfirmDialog.close());
+externalConfirmDialog.addEventListener('click', (event) => {
+  if (event.target === externalConfirmDialog) externalConfirmDialog.close();
 });
 
 closeDialogButton.addEventListener('click', () => closeContent());
